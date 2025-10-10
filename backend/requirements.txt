@@ -1,0 +1,14 @@
+openai>=1.12.0
+tiktoken
+fastapi
+uvicorn
+pydantic
+python-multipart
+pdfplumber
+langchain
+openai
+anthropic
+google-generativeai
+requests
+pydantic-settings
+uvicorn[standard]

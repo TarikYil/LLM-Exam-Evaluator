@@ -1,0 +1,55 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Python (backend)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node / Next.js (ui)
+node_modules/
+.npm/
+.pnpm-store/
+.next/
+.next-static/
+.next-cache/
+out/
+dist/
+yarn.lock
+pnpm-lock.yaml
+package-lock.json
+.env
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+**/.docker/
+**/Dockerfile.*.tmp
+
+# Build artifacts
+coverage/
+build/
+.tmp/
+.cache/
+
+# Misc
+*.local
+*.bak
+*.tmp
