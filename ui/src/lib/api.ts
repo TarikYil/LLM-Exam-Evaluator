@@ -1,10 +1,10 @@
-import { BACKEND_URL } from "@/lib/config";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export async function startAssessment(student: File, key: File): Promise<{ job_id: string }> {
   const formData = new FormData();
   formData.append("student_pdf", student);
   formData.append("answer_key", key);
-  const res = await fetch(`${BACKEND_URL}/api/assess`, { method: "POST", body: formData });
+  const res = await fetch(`${API_URL}/api/assess`, { method: "POST", body: formData });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || `HTTP ${res.status}`);
