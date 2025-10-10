@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BACKEND_URL } from "@/lib/config";
 import type { WsMessage, ProgressMessage } from "@/types";
 import { storage } from "@/lib/api";
 
@@ -29,11 +28,20 @@ export function useWebSocket(jobId?: string, opts: UseWebSocketOptions = {}) {
   const attemptsRef = useRef(0);
   const pingTimerRef = useRef<number | undefined>(undefined);
 
+  // 🔧 Environment değişkenlerinden URL’leri al
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
+  const WS_URL = API_URL
+    ? API_URL.startsWith("https")
+      ? API_URL.replace("https", "wss")
+      : API_URL.replace("http", "ws")
+    : "";
+
+  // 🔗 Tam WebSocket endpoint’ini üret
   const url = useMemo(() => {
     if (!jobId) return undefined;
-    const base = urlOverride || BACKEND_URL;
-    return base.replace(/^http/, "ws") + `/ws/assess/${jobId}`;
-  }, [jobId, urlOverride]);
+    const base = urlOverride || WS_URL;
+    return `${base.replace(/\/$/, "")}/ws/assess/${jobId}`;
+  }, [jobId, urlOverride, WS_URL]);
 
   const cleanup = useCallback(() => {
     if (pingTimerRef.current) {
@@ -54,7 +62,6 @@ export function useWebSocket(jobId?: string, opts: UseWebSocketOptions = {}) {
         setConnected(true);
         setError(undefined);
         attemptsRef.current = 0;
-        // Keep-alive ping (server tarafı yoksayabilir, zararsız)
         pingTimerRef.current = window.setInterval(() => {
           try { ws.send("ping"); } catch {}
         }, 20000);
@@ -79,22 +86,27 @@ export function useWebSocket(jobId?: string, opts: UseWebSocketOptions = {}) {
           const msg: WsMessage = JSON.parse(e.data);
           setMessages((prev) => {
             const next = [...prev, msg];
-            // Persist last run for reports
+
+            // Son run’ları localStorage’a kaydet
             try {
               const job = (msg as any).job_id as string;
               if (job) {
                 const progress = next.filter((m): m is ProgressMessage => m.type === "progress");
-                const summary = next.find(m => m.type === "summary");
+                const summary = next.find((m) => m.type === "summary");
                 const studentName = progress[0]?.payload.student_name;
-                storage.saveRun({ job_id: job, created_at: Date.now(), student_name: studentName, progress, summary: (summary as any)?.payload });
+                storage.saveRun({
+                  job_id: job,
+                  created_at: Date.now(),
+                  student_name: studentName,
+                  progress,
+                  summary: (summary as any)?.payload,
+                });
               }
             } catch {}
             return next;
           });
           onMessage?.(msg);
-        } catch (err) {
-          // yutulur
-        }
+        } catch {}
       };
     } catch (e: any) {
       setError(e?.message || String(e));
