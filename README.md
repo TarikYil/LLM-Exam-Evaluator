@@ -2,6 +2,7 @@
 
 A PDF-based exam evaluation system that parses student answers and compares them against an answer key using an LLM-augmented grading pipeline. It streams per-question progress via WebSocket and provides a modern analysis UI.
 
+
 <img width="1916" height="1025" alt="image" src="https://github.com/user-attachments/assets/7a006141-405c-4692-b4a0-acae362f5336" />
 
 ## What it does
@@ -157,4 +158,5 @@ Frontend (`ui/.env.local`):
 - Real-time visibility with per-question breakdown
 - Clean, professional UI with actionable analysis
 - Containerized deployment with Docker + Nginx
+
 
